@@ -14,6 +14,7 @@
   left: 60%;
   width: 40%;
   height: 100%;
+  border: 0.3ex solid rgba(0,0,0,0);
 }
 
 .bottom {
@@ -29,15 +30,11 @@
 
 .wall {
   width: 60%;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
   overflow: auto;
-  border: 0.3ex solid rgba(0,0,0,0.45);
+  border: 0.3ex solid rgba(0,50,0,0.45);
   background: transparent;
   color: rgb(20,20,20);
   cursor: default;
-  display: flex;
   flex-direction: column;
   font-size: 100%;
 }

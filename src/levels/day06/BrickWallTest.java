@@ -22,7 +22,7 @@ Direction: {
       .addToPile(0, true, "{")
       .addToPile(0, true, ".turn: ")
       .addToPile(0, true, "Direction")
-      .addToPile(0, true, "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
+      .addToPile(0, true, "wwwwwwwwwwwwwwwwwwwwwwww")
       .build();
     }
   }

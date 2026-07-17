@@ -18,45 +18,54 @@ import resources.File;
  *   where the player has to remove all the unnecessary bricks.
  */
 public class BrickWall {
-  private static final int maxLength = 80;
+  private static final int wallLength= 80;
+  private static final int pileLength= 53;
   
-  private final List<Brick> brickPile= new ArrayList<>();
-  private final List<List<Brick>> brickRows= new ArrayList<>();
-  private List<Brick> currentRowBricks= new ArrayList<>();
+  private final List<List<Brick>> pileRows= new ArrayList<>();
+  private final List<List<Brick>> wallRows= new ArrayList<>();
+  private List<Brick> currentWallRowBricks= new ArrayList<>();
+  private List<Brick> currentPileRowBricks= new ArrayList<>();
   
   private final Days.LevelName name;
   private final String solution;
-  int currentIndexAlongRow= 0;
+  private int currentIndexAlongWallRow= 0;
+  private int currentIndexAlongPileRow= 0;
   
   public BrickWall(Days.LevelName name, String solution) {
     this.name= name;
     this.solution= solution;
+    wallRows.add(currentWallRowBricks);
+    pileRows.add(currentPileRowBricks);
     }
   public BrickWall addToPile(int indexSkip, boolean movable, String s) {
-    brickPile.add(new Brick(s, movable, indexSkip));
+    currentIndexAlongPileRow += indexSkip;
+    currentPileRowBricks.add(new Brick(s, movable, currentIndexAlongPileRow));
     return this;
     }
   public BrickWall newRow() {
-    brickRows.add(currentRowBricks);
-    currentIndexAlongRow = 0;
-    currentRowBricks = new ArrayList<>();
+    currentWallRowBricks = new ArrayList<>();
+    currentPileRowBricks = new ArrayList<>();
+    wallRows.add(currentWallRowBricks);
+    pileRows.add(currentPileRowBricks);
+    currentIndexAlongWallRow = 0;
+    currentIndexAlongPileRow = 0;
     return this;
     }
   public BrickWall addBrick(int indexSkip, boolean movable, String s) {
-    currentIndexAlongRow += indexSkip;
-    currentRowBricks.add(new Brick(s, movable, currentIndexAlongRow));
+    currentIndexAlongWallRow += indexSkip;
+    currentWallRowBricks.add(new Brick(s, movable, currentIndexAlongWallRow));
     return this;
     }
   public BrickWall addImmovable(int indexSkip, String s) { return addBrick(indexSkip, false, s); }
   public BrickWall addMovable(int indexSkip, String s) { return addBrick(indexSkip, true, s); }
   public String build() {
     return name.htmlNextLevel(File.BrickWall_html.text)
-      .replace("[###WALL###]", renderWall())
-      .replace("[###PILE###]", renderPile());
+      .replace("[###WALL###]", renderWall(wallRows, wallLength, true))
+      .replace("[###PILE###]", renderWall(pileRows, pileLength, false));
     }
 
-  private String renderWall() {
-    brickRows.add(currentRowBricks);
+  private String renderWall(List<List<Brick>> brickRows, int length, boolean isWall) {
+    //brickRows.add(currentRowBricks);
     StringBuilder sb = new StringBuilder();
     for (List<Brick> sortedBricks : brickRows) {
       sb.append("<span class=\"brickRow\">");
@@ -70,19 +79,20 @@ public class BrickWall {
         sb.append(brick.toHtml());
         currentIndex += len;
         }
-      for (; currentIndex < maxLength; currentIndex++) {
+      for (; currentIndex < length; currentIndex++) {
         sb.append("<span class=\"empty\">&nbsp;</span>");
         }
       sb.append("</span>");
       }
-    return "<div id=\"wall\" class=\"wall\" data-solution=\"" + Escape.escapeForHtmlText(solution) + "\">" + sb.toString() + "</div>";
+    return !isWall ? "<div id=\"pile\" class=\"brickPile\">" + sb.toString() + "</div>" : 
+      "<div id=\"wall\" class=\"wall\" data-solution=\"" + Escape.escapeForHtmlText(solution) + "\">" + sb.toString() + "</div>";
     }
 
-  private String renderPile() {
-    StringBuilder sb= new StringBuilder();
-    for (Brick b : brickPile) { sb.append(b.toHtml()); }
-    return sb.toString();
-    }
+//  private String renderPile() {
+//    StringBuilder sb= new StringBuilder();
+//    for (Brick b : brickPile) { sb.append(b.toHtml()); }
+//    return sb.toString();
+//    }
 
   private record Brick(String code, boolean movable, int index) {
     public int length() { return code.length(); }
