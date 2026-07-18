@@ -65,6 +65,7 @@ const registerMovable= e => {
 	const pos= getBrickPosFromMouse(e, event);
     ghostBrick.style.left = `${pos[0]}px`;
     ghostBrick.style.top = `${pos[1]}px`;
+    startSparkles(ghostBrick);
     if (e.parentElement !== pile) {
       setEmpty(e);
       } else { e.remove(); }
@@ -127,6 +128,7 @@ document.addEventListener("pointerup", e => {
   currentEmpty = null;
   ghostBrick = null;
   dragging = false;
+  stopSparkles();
   });
 
 const normaliseWallText= () => {
@@ -163,3 +165,39 @@ const buttonActions= {
   hintBtn: hint,
   };
 const Buttons= initButtons(() => {}, buttonActions);
+
+
+let sparkleInterval = null;
+
+const spawnSparkle = brick => {
+  if (!brick) return;
+
+  const brickRect = brick.getBoundingClientRect();
+  const containerRect = movingBricksDiv.getBoundingClientRect();
+
+  const sparkle = document.createElement("div");
+  sparkle.className = "sparkle";
+
+  // Random position within the brick
+  const x = brickRect.left - containerRect.left + Math.random() * brickRect.width;
+  const y = brickRect.top - containerRect.top + Math.random() * brickRect.height;
+
+  sparkle.style.left = `${x}px`;
+  sparkle.style.top = `${y}px`;
+
+  gameArea.appendChild(sparkle);
+
+  setTimeout(() => sparkle.remove(), 1000);
+  };
+
+const startSparkles = brick => {
+  stopSparkles();
+  sparkleInterval = setInterval(() => spawnSparkle(brick), 80);
+  };
+
+const stopSparkles = () => {
+  if (sparkleInterval !== null) {
+    clearInterval(sparkleInterval);
+    sparkleInterval = null;
+    }
+  };

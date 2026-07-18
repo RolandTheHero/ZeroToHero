@@ -80,3 +80,59 @@
   top: 5%;
   right: 5%;
 }
+
+.sparkle {
+  position: absolute;
+  width: 0.3em;
+  height: 0.3em;
+  pointer-events: none;
+
+  background: radial-gradient(circle, #fff8b0 0%, gold 45%, orange 100%);
+  clip-path: polygon(
+    50% 0%,
+    61% 39%,
+    100% 50%,
+    61% 61%,
+    50% 100%,
+    39% 61%,
+    0% 50%,
+    39% 39%
+    );
+
+  transform-origin: center;
+  animation:
+    sparkleMove 900ms ease-out forwards,
+    sparkleSpin 3000ms linear,
+    sparkleScale 900ms ease-out forwards;
+  }
+
+@keyframes sparkleMove {
+  from {
+    translate: 0 0;
+    } to {
+    translate: var(--dx) var(--dy);
+    }
+  }
+
+@keyframes sparkleSpin {
+  from {
+    rotate: 0deg;
+    } to {
+    rotate: 540deg;
+    }
+  }
+
+@keyframes sparkleScale {
+  0% {
+    opacity: 0;
+    scale: 0;
+    }
+  15% {
+    opacity: 1;
+    scale: 1.3;
+    }
+  100% {
+    opacity: 0;
+    scale: 0;
+    }
+  }
