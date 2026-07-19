@@ -28,8 +28,8 @@ const setEmpty= e => { // Returns the first span of this group of empty
     parent.insertBefore(empty, e);
 	if (i === 0) { firstEmpty = empty; }
   }
+  lastSpot = findSlot(firstEmpty, ghostBrick.textContent.length);
   e.remove();
-  return firstEmpty;
   }
 
 const createGhost= e => {
@@ -70,7 +70,7 @@ const registerMovable= e => {
     ghostBrick.style.left = `${pos[0]}px`;
     ghostBrick.style.top = `${pos[1]}px`;
     startSparkles(ghostBrick);
-    lastSpot = findSlot(setEmpty(e), ghostBrick.textContent.length);
+	setEmpty(e);
     };
   e.addEventListener("pointerdown", handler);
   movableBrickEventListeners.set(e, handler);
@@ -108,25 +108,16 @@ document.addEventListener("pointerup", e => {
   const text= ghostBrick.textContent;
   let slot= currentEmpty !== null ? findSlot(currentEmpty, text.length) : null;
   if (slot === null) { slot = lastSpot; }
-  if (slot !== null) {
-    // commit: turn the run of empties into a single placed brick
-    const parent= slot[0].parentElement;
-    const ref= slot[0];
-    const placed= document.createElement("span");
-    placed.textContent = text;
-    placed.className = "brick movable";
-    parent.insertBefore(placed, ref);
-    slot.forEach(s => s.remove());
-    registerMovable(placed);
-    ghostBrick.remove();
-    } else {
-    // miss, or not enough consecutive empties: send back to pile
-    ghostBrick.style.position = "";
-    ghostBrick.style.left = "";
-    ghostBrick.style.top = "";
-    pile.appendChild(ghostBrick);
-    registerMovable(ghostBrick);
-    }
+  // commit: turn the run of empties into a single placed brick
+  const parent= slot[0].parentElement;
+  const ref= slot[0];
+  const placed= document.createElement("span");
+  placed.textContent = text;
+  placed.className = "brick movable";
+  parent.insertBefore(placed, ref);
+  slot.forEach(s => s.remove());
+  registerMovable(placed);
+  ghostBrick.remove();
   currentEmpty = null;
   ghostBrick = null;
   dragging = false;
