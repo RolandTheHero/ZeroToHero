@@ -11,21 +11,25 @@ const space= "\u00A0";
 
 let dragging= false;
 let currentEmpty= null; // The current empty span the mouse is on while dragging
+let lastSpot= null; // The space where the newly dragged brick just left
 
 const isEmpty= e => e && e.classList && e.classList.contains("empty");
 
-const setEmpty= e => {
+const setEmpty= e => { // Returns the first span of this group of empty
   const len = e.textContent.length;
   const parent = e.parentElement;
   e.removeEventListener("pointerdown", movableBrickEventListeners.get(e));
   movableBrickEventListeners.delete(e);
+  let firstEmpty= null;
   for (let i = 0; i < len; i++) {
     const empty = document.createElement("span");
     empty.className = "empty";
     empty.textContent = space;
     parent.insertBefore(empty, e);
+	if (i === 0) { firstEmpty = empty; }
   }
   e.remove();
+  return firstEmpty;
   }
 
 const createGhost= e => {
@@ -66,9 +70,7 @@ const registerMovable= e => {
     ghostBrick.style.left = `${pos[0]}px`;
     ghostBrick.style.top = `${pos[1]}px`;
     startSparkles(ghostBrick);
-    if (e.parentElement !== pile) {
-      setEmpty(e);
-      } else { e.remove(); }
+    lastSpot = findSlot(setEmpty(e), ghostBrick.textContent.length);
     };
   e.addEventListener("pointerdown", handler);
   movableBrickEventListeners.set(e, handler);
@@ -104,8 +106,8 @@ document.addEventListener("pointerup", e => {
   ghostBrick.classList.remove("ghost");
 
   const text= ghostBrick.textContent;
-  const slot= currentEmpty !== null ? findSlot(currentEmpty, text.length) : null;
-
+  let slot= currentEmpty !== null ? findSlot(currentEmpty, text.length) : null;
+  if (slot === null) { slot = lastSpot; }
   if (slot !== null) {
     // commit: turn the run of empties into a single placed brick
     const parent= slot[0].parentElement;
