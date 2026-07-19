@@ -61,11 +61,11 @@ public class BrickWall {
   public String build() {
     return name.htmlNextLevel(File.BrickWall_html.text)
       .replace("[###WALL###]", renderWall(wallRows, wallLength, true))
-      .replace("[###PILE###]", renderWall(pileRows, pileLength, false));
+      .replace("[###PILE###]", renderWall(pileRows, pileLength, false))
+      .replace("[###ANSWERWALL###]", renderAnswerWall());
     }
 
   private String renderWall(List<List<Brick>> brickRows, int length, boolean isWall) {
-    //brickRows.add(currentRowBricks);
     StringBuilder sb = new StringBuilder();
     for (List<Brick> sortedBricks : brickRows) {
       sb.append("<span class=\"brickRow\">");
@@ -87,12 +87,9 @@ public class BrickWall {
     return !isWall ? "<div id=\"pile\" class=\"brickPile\">" + sb.toString() + "</div>" : 
       "<div id=\"wall\" class=\"wall\" data-solution=\"" + Escape.escapeForHtmlText(solution) + "\">" + sb.toString() + "</div>";
     }
-
-//  private String renderPile() {
-//    StringBuilder sb= new StringBuilder();
-//    for (Brick b : brickPile) { sb.append(b.toHtml()); }
-//    return sb.toString();
-//    }
+  private String renderAnswerWall() {
+    return "<pre id=\"answerWall\" class=\"wall answer hidden\">" + Escape.escapeForHtmlText(solution) + "</pre>";
+    }
 
   private record Brick(String code, boolean movable, int index) {
     public int length() { return code.length(); }

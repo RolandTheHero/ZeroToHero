@@ -1,5 +1,6 @@
 const wall= Utils.getElementById("wall");
-const brickRows= document.querySelectorAll(".brickRow");
+const answerWall= Utils.getElementById("answerWall");
+const brickRows= wall.querySelectorAll(".brickRow");
 const movableBricks= document.querySelectorAll(".brick.movable");
 const movingBricksDiv= Utils.getElementById("movingBricks");
 const pile= Utils.getElementById("pile");
@@ -71,6 +72,7 @@ const registerMovable= e => {
     ghostBrick.style.top = `${pos[1]}px`;
     startSparkles(ghostBrick);
 	setEmpty(e);
+	answerWall.classList.add("hidden");
     };
   e.addEventListener("pointerdown", handler);
   movableBrickEventListeners.set(e, handler);
@@ -150,7 +152,7 @@ const checkSolution= () => {
   };
 
 const hint= () => {
-  console.log("Hint");
+  answerWall.classList.remove("hidden");
   };
 
 const buttonActions= {

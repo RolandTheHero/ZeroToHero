@@ -8,6 +8,10 @@
   background-repeat: no-repeat;
 }
 
+.hidden {
+  display: none;
+}
+
 .brickPile {
   position: absolute;
   top: 0;
@@ -37,6 +41,24 @@
   cursor: default;
   flex-direction: column;
   font-size: 100%;
+}
+
+.wall.answer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: rgba(0, 255, 0, 0.25);
+  pointer-events: none;
+  animation: answerFade 2s ease-in-out infinite;
+  }
+@keyframes answerFade {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 1; }
+  }
+.wall.answer::-webkit-scrollbar {
+    display: none;
 }
 
 .brick {

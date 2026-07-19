@@ -9,7 +9,7 @@ public class BrickWallTest implements Function<Days.LevelName, String>{
   public String apply(Days.LevelName name) {
     return new BrickWall(name, """
 Direction: {
-.turn: Direction;
+  .turn: Direction;
 }""")
       .addImmovable(9, ": ")
       .addMovable(0, "Direction")
