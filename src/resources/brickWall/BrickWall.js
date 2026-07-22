@@ -10,25 +10,28 @@ const solution= MetaData.str(wall, "solution");
 
 const space= "\u00A0";
 
+const glideTime= 500; // How long the snap-back glide takes
+
 let dragging= false;
+let gliding= false; // True while a rejected brick is animating home
 let currentEmpty= null; // The current empty span the mouse is on while dragging
 let lastSpot= null; // The space where the newly dragged brick just left
 
 const isEmpty= e => e && e.classList && e.classList.contains("empty");
 
 const setEmpty= e => { // Returns the first span of this group of empty
-  const len = e.textContent.length;
-  const parent = e.parentElement;
+  const len= e.textContent.length;
+  const parent= e.parentElement;
   e.removeEventListener("pointerdown", movableBrickEventListeners.get(e));
   movableBrickEventListeners.delete(e);
   let firstEmpty= null;
-  for (let i = 0; i < len; i++) {
-    const empty = document.createElement("span");
+  for (let i= 0; i < len; i++) {
+    const empty= document.createElement("span");
     empty.className = "empty";
     empty.textContent = space;
     parent.insertBefore(empty, e);
-	if (i === 0) { firstEmpty = empty; }
-  }
+    if (i === 0) { firstEmpty = empty; }
+    }
   lastSpot = findSlot(firstEmpty, ghostBrick.textContent.length);
   e.remove();
   }
@@ -65,18 +68,19 @@ const getBrickPosFromMouse= (brick, event) => {
 
 const registerMovable= e => {
   const handler= event => {
+    if (gliding) { return; }
     dragging = true;
     ghostBrick = createGhost(e);
-	const pos= getBrickPosFromMouse(e, event);
+    const pos= getBrickPosFromMouse(e, event);
     ghostBrick.style.left = `${pos[0]}px`;
     ghostBrick.style.top = `${pos[1]}px`;
     startSparkles(ghostBrick);
-	setEmpty(e);
-	answerWall.classList.add("hidden");
+    setEmpty(e);
+    answerWall.classList.add("hidden");
     };
   e.addEventListener("pointerdown", handler);
   movableBrickEventListeners.set(e, handler);
-}
+  }
 
 movableBricks.forEach(b => registerMovable(b));
 
@@ -103,14 +107,8 @@ document.addEventListener("pointermove", e => {
     }
   });
 
-document.addEventListener("pointerup", e => {
-  if (ghostBrick === null) { return; }
-  ghostBrick.classList.remove("ghost");
-
-  const text= ghostBrick.textContent;
-  let slot= currentEmpty !== null ? findSlot(currentEmpty, text.length) : null;
-  if (slot === null) { slot = lastSpot; }
-  // commit: turn the run of empties into a single placed brick
+// Turn a run of empty spans into a single placed brick.
+const commitBrick= (slot, text) => {
   const parent= slot[0].parentElement;
   const ref= slot[0];
   const placed= document.createElement("span");
@@ -119,11 +117,64 @@ document.addEventListener("pointerup", e => {
   parent.insertBefore(placed, ref);
   slot.forEach(s => s.remove());
   registerMovable(placed);
-  ghostBrick.remove();
-  currentEmpty = null;
-  ghostBrick = null;
-  dragging = false;
-  stopSparkles();
+  }
+
+// Ease the ghost from wherever it was dropped back onto its slot.
+const glideTo= (ghost, slot, done) => {
+  const rect= slot[0].getBoundingClientRect();
+  const gameAreaRect= gameArea.getBoundingClientRect();
+  const toX= rect.left - gameAreaRect.left;
+  const toY= rect.top - gameAreaRect.top;
+  const fromX= parseFloat(ghost.style.left) || 0;
+  const fromY= parseFloat(ghost.style.top) || 0;
+
+  if (Math.abs(toX - fromX) < 0.5 && Math.abs(toY - fromY) < 0.5) {
+    done();
+    return;
+    }
+
+  const start= performance.now();
+  const step= t => {
+    const progress= Math.min((t - start) / glideTime, 1);
+    const eased= 1 - Math.pow(1 - progress, 3);
+    ghost.style.left = `${fromX + (toX - fromX) * eased}px`;
+    ghost.style.top = `${fromY + (toY - fromY) * eased}px`;
+    if (progress < 1) { requestAnimationFrame(step); }
+    else { done(); }
+    };
+
+  requestAnimationFrame(step);
+  }
+
+document.addEventListener("pointerup", e => {
+  if (ghostBrick === null || gliding) { return; }
+  ghostBrick.classList.remove("ghost");
+
+  const text= ghostBrick.textContent;
+  let slot= currentEmpty !== null ? findSlot(currentEmpty, text.length) : null;
+  const snapBack= slot === null;
+  if (snapBack) { slot = lastSpot; }
+
+  const ghost= ghostBrick;
+  const finish= () => {
+    commitBrick(slot, text);
+    ghost.remove();
+    currentEmpty = null;
+    ghostBrick = null;
+    dragging = false;
+    gliding = false;
+    stopSparkles();
+    };
+
+  if (snapBack) {
+    gliding = true;
+    ghostBrick = null; // Stops pointermove from grabbing it mid-glide
+    dragging = false;
+    currentEmpty = null;
+    glideTo(ghost, slot, finish);
+    } else {
+    finish();
+    }
   });
 
 const normaliseWallText= () => {
@@ -162,20 +213,20 @@ const buttonActions= {
 const Buttons= initButtons(() => {}, buttonActions);
 
 
-let sparkleInterval = null;
+let sparkleInterval= null;
 
-const spawnSparkle = brick => {
+const spawnSparkle= brick => {
   if (!brick) return;
 
-  const brickRect = brick.getBoundingClientRect();
-  const containerRect = movingBricksDiv.getBoundingClientRect();
+  const brickRect= brick.getBoundingClientRect();
+  const containerRect= movingBricksDiv.getBoundingClientRect();
 
-  const sparkle = document.createElement("div");
+  const sparkle= document.createElement("div");
   sparkle.className = "sparkle";
 
   // Random position within the brick
-  const x = brickRect.left - containerRect.left + Math.random() * brickRect.width;
-  const y = brickRect.top - containerRect.top + Math.random() * brickRect.height;
+  const x= brickRect.left - containerRect.left + Math.random() * brickRect.width;
+  const y= brickRect.top - containerRect.top + Math.random() * brickRect.height;
 
   sparkle.style.left = `${x}px`;
   sparkle.style.top = `${y}px`;
@@ -185,12 +236,12 @@ const spawnSparkle = brick => {
   setTimeout(() => sparkle.remove(), 1000);
   };
 
-const startSparkles = brick => {
+const startSparkles= brick => {
   stopSparkles();
   sparkleInterval = setInterval(() => spawnSparkle(brick), 80);
   };
 
-const stopSparkles = () => {
+const stopSparkles= () => {
   if (sparkleInterval !== null) {
     clearInterval(sparkleInterval);
     sparkleInterval = null;
