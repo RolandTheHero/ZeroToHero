@@ -20,6 +20,9 @@
   height: 100%;
   border: 0.3ex solid rgba(0,0,0,0);
 }
+.brickPile .empty {
+  background: transparent;
+}
 
 .bottom {
   position: absolute;
@@ -99,7 +102,7 @@
 
 .buttonContainer {
   position: absolute;
-  top: 5%;
+  top: 9%;
   right: 5%;
 }
 
