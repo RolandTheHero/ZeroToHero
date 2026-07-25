@@ -5,6 +5,7 @@ const movableBricks= document.querySelectorAll(".brick.movable");
 const movingBricksDiv= Utils.getElementById("movingBricks");
 const pile= Utils.getElementById("pile");
 const gameArea= Utils.getElementById("gameArea");
+const submitProgress= Utils.getElementById("submitProgress");
 
 const solution= MetaData.str(wall, "solution");
 
@@ -117,6 +118,7 @@ const commitBrick= (slot, text) => {
   parent.insertBefore(placed, ref);
   slot.forEach(s => s.remove());
   registerMovable(placed);
+  updateVisuals();
   }
 
 // Ease the ghost from wherever it was dropped back onto its slot.
@@ -247,3 +249,52 @@ const stopSparkles= () => {
     sparkleInterval = null;
     }
   };
+
+const enableSubmitButton= () => {
+  submitBtn.classList.remove("transparent");
+  submitBtn.disabled = false;
+  //submitProgress.style.opacity = "0";
+  };
+const disableSubmitButton= () => {
+  submitBtn.classList.add("transparent");
+  submitBtn.disabled = true;
+  //submitProgress.style.opacity = "1";
+  };
+disableSubmitButton();
+enableSubmitButton();
+let displayedPercent= 0;
+const updateVisuals= () => {
+  const wallText = normaliseWallText().replace(/[\s\u00A0]/g, "");
+  const sol = Utils.normalize(solution).replace(/[\s\u00A0]/g, "");
+  let correct = 0;
+  for (let i = 0; i < sol.length; i++) {
+    if (wallText[i] !== sol[i]) { break; }
+    correct++;
+    }
+  const percent= correct / sol.length;
+  disableSubmitButton();
+
+  function animateProgress(toPercent, duration) {
+    const fromPercent= displayedPercent;
+    const start= performance.now();
+    function frame(time) {
+      const t = Math.min((time - start) / duration, 1);
+      const progress = fromPercent + (toPercent - fromPercent) * t;
+      submitProgress.style.setProperty("--progress", `${progress * 360}deg`);
+      displayedPercent = progress;
+      if (progress >= 1) {
+        enableSubmitButton();
+        }
+      if (t < 1) {
+        requestAnimationFrame(frame);
+        } else {
+        displayedPercent = toPercent;
+        }
+     }
+    requestAnimationFrame(frame);
+    };
+
+  animateProgress(percent, 500);
+  };
+
+updateVisuals();

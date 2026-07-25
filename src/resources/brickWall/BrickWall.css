@@ -11,6 +11,9 @@
 .hidden {
   display: none;
 }
+#submitBtn.transparent {
+  background: transparent;
+  }
 
 .brickPile {
   position: absolute;
@@ -160,4 +163,18 @@
     opacity: 0;
     scale: 0;
     }
+  }
+
+.submitProgress {
+  --progress: 0deg; /* 0deg = 0%, 360deg = 100% */
+
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: conic-gradient(
+    #3ac74f var(--progress),
+    rgba(255,255,255,0.15) 0deg
+    );
   }
