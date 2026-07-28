@@ -17,6 +17,7 @@ let dragging= false;
 let gliding= false; // True while a rejected brick is animating home
 let currentEmpty= null; // The current empty span the mouse is on while dragging
 let lastSpot= null; // The space where the newly dragged brick just left
+let vibratingBrick= null;
 
 const isEmpty= e => e && e.classList && e.classList.contains("empty");
 
@@ -78,6 +79,9 @@ const registerMovable= e => {
     startSparkles(ghostBrick);
     setEmpty(e);
     answerWall.classList.add("hidden");
+	if (vibratingBrick !== null) { vibratingBrick.classList.remove("vibrate") }
+	vibratingBrick = null;
+	hintChar.hidden = true;
     };
   e.addEventListener("pointerdown", handler);
   movableBrickEventListeners.set(e, handler);
@@ -196,7 +200,16 @@ const onComplete= () => {
   Utils.checkExists(nextLevelUrl);
   setTimeout(() => window.location.href = nextLevelUrl, 5000);
   };
-const onFail= () => { console.log("Nay"); };
+const onFail= () => {
+  const wrongBrick= findFirstWrongBrick();
+  if (wrongBrick.classList.contains("movable")) {
+    wrongBrick.classList.add("vibrate");
+    vibratingBrick = wrongBrick;
+    displayPanicMessage("Something doesn't seem right. That brick is shaking!");
+	return;
+    }
+  console.log("Should not vibrate immovable brick");
+  };
 
 const checkSolution= () => {
   const wallText= normaliseWallText();
@@ -295,6 +308,33 @@ const updateVisuals= () => {
     };
 
   animateProgress(percent, 500);
+  };
+
+// Build the wall exactly as normaliseWallText does, but one character at a
+// time, normalising after each. The first character whose addition stops the
+// result being a prefix of the solution belongs to the wrong brick.
+const findFirstWrongBrick= () => {
+  const sol= Utils.normalize(solution);
+  let raw= "";
+  for (const r of brickRows) {
+    for (const c of r.children) {
+      const text= c.textContent;
+      for (let i= 0; i < text.length; i++) {
+        raw += text[i];
+        if (!sol.startsWith(Utils.normalize(raw))) { return c; }
+        }
+      }
+    raw += "\n";
+    if (!sol.startsWith(Utils.normalize(raw))) { return null; } // Row ended early
+    }
+    return null;
+  };
+
+const hintChar= document.getElementById("hintCharacter");
+const displayPanicMessage= (msg) => {
+  const speechBubble= hintChar.querySelector(".speechBubble");
+  speechBubble.textContent = msg;
+  hintChar.hidden = false;
   };
 
 updateVisuals();

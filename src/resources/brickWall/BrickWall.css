@@ -178,3 +178,18 @@
     rgba(255,255,255,0.15) 0deg
     );
   }
+
+  @keyframes vibrate {
+      0% { transform: translate(0, 0) rotate(0deg); }
+     20% { transform: translate(-0.3ex, 0.3ex) rotate(-1.6deg); }
+     40% { transform: translate(0.3ex, -0.3ex) rotate(1.6deg); }
+     60% { transform: translate(-0.3ex, -0.3ex) rotate(-1deg); }
+     80% { transform: translate(0.3ex, 0.3ex) rotate(1deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+  .brick.vibrate {
+    animation: vibrate 0.2s linear infinite;
+    display: inline-block; /* Inline spans ignore transform */
+    transform-origin: center;
+    }

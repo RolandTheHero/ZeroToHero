@@ -11,8 +11,9 @@ public class BrickWallTest implements Function<Days.LevelName, String>{
 Direction: {
   .turn: Direction;
 }""")
+      .addMovable(0, "Direc")
+      .addMovable(0, "tion")
       .addImmovable(9, ": ")
-      .addMovable(0, "Direction")
       .newRow()
       .addMovable(0, ";")
       .addMovable(1, "   ")
