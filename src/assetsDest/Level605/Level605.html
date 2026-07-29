@@ -20,16 +20,21 @@
     <div id="pile" class="brickPile"><span class="brickRow"><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span></span><span class="brickRow"><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span></span><span class="brickRow"><span class="brick movable">}</span><span class="brick movable">{</span><span class="brick movable">.turn:&nbsp;</span><span class="brick movable">Direction</span><span class="brick movable">wwwwwwwwwwwwwwwwwwwwwwww</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span><span class="empty">&nbsp;</span></span></div>
 	<pre id="answerWall" class="wall answer hidden">Direction:&nbsp;{&#10;&nbsp;&nbsp;.turn:&nbsp;Direction;&#10;}</pre>
     </div>
-    <div class="buttonContainer">
-      <div class="roundBtn" data-tooltip="Check your work">
-        <div class="submitProgress" id="submitProgress">
-          <button id="submitBtn">🎉</button>
-		  </div>
-		</div>
-      <div class="roundBtn" data-tooltip="Hint">
-        <button id="hintBtn">?</button>
+  <div class="buttonContainer">
+    <div class="roundBtn" data-tooltip="Check your work">
+      <div class="submitProgress" id="submitProgress">
+        <button id="submitBtn">🎉</button>
         </div>
       </div>
+    <div class="roundBtn" data-tooltip="Hint">
+      <button id="hintBtn">?</button>
+      </div>
+    </div>
+  <div id="scale" class="meter">
+    <div class="meterArc"></div>
+    <div class="meterNeedle"></div>
+    <div class="meterHub"></div>
+    </div>
 
   <div id="screenOverlay"></div>
   <div id="gameMessage" class="messageBox" style="display: none;"></div>

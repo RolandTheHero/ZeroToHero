@@ -5,13 +5,14 @@ const movableBricks= document.querySelectorAll(".brick.movable");
 const movingBricksDiv= Utils.getElementById("movingBricks");
 const pile= Utils.getElementById("pile");
 const gameArea= Utils.getElementById("gameArea");
-const submitProgress= Utils.getElementById("submitProgress");
+const scale= Utils.getElementById("scale");
 
 const solution= MetaData.str(wall, "solution");
 
 const space= "\u00A0";
 
 const glideTime= 500; // How long the snap-back glide takes
+const maxTilt= 80; // Degrees the needle swings at each end of the sweep
 
 let dragging= false;
 let gliding= false; // True while a rejected brick is animating home
@@ -79,9 +80,9 @@ const registerMovable= e => {
     startSparkles(ghostBrick);
     setEmpty(e);
     answerWall.classList.add("hidden");
-	if (vibratingBrick !== null) { vibratingBrick.classList.remove("vibrate") }
-	vibratingBrick = null;
-	hintChar.hidden = true;
+    if (vibratingBrick !== null) { vibratingBrick.classList.remove("vibrate") }
+    vibratingBrick = null;
+    hintChar.hidden = true;
     };
   e.addEventListener("pointerdown", handler);
   movableBrickEventListeners.set(e, handler);
@@ -206,7 +207,7 @@ const onFail= () => {
     wrongBrick.classList.add("vibrate");
     vibratingBrick = wrongBrick;
     displayPanicMessage("Something doesn't seem right. That brick is shaking!");
-	return;
+    return;
     }
   console.log("Should not vibrate immovable brick");
   };
@@ -266,48 +267,30 @@ const stopSparkles= () => {
 const enableSubmitButton= () => {
   submitBtn.classList.remove("transparent");
   submitBtn.disabled = false;
-  //submitProgress.style.opacity = "0";
   };
 const disableSubmitButton= () => {
   submitBtn.classList.add("transparent");
   submitBtn.disabled = true;
-  //submitProgress.style.opacity = "1";
   };
-disableSubmitButton();
-enableSubmitButton();
-let displayedPercent= 0;
+
+// A side weighs as much as its non-whitespace character count after
+// normalisation. \s covers \u00A0, so unfilled slots weigh nothing.
+const weigh= str => str.replace(/[\s\u00A0]/g, "").length;
+
 const updateVisuals= () => {
-  const wallText = normaliseWallText().replace(/[\s\u00A0]/g, "");
-  const sol = Utils.normalize(solution).replace(/[\s\u00A0]/g, "");
-  let correct = 0;
-  for (let i = 0; i < sol.length; i++) {
-    if (wallText[i] !== sol[i]) { break; }
-    correct++;
-    }
-  const percent= correct / sol.length;
-  disableSubmitButton();
+  const wallCount= weigh(normaliseWallText());
+  const solCount= weigh(Utils.normalize(solution));
+  const balanced= wallCount === solCount;
 
-  function animateProgress(toPercent, duration) {
-    const fromPercent= displayedPercent;
-    const start= performance.now();
-    function frame(time) {
-      const t = Math.min((time - start) / duration, 1);
-      const progress = fromPercent + (toPercent - fromPercent) * t;
-      submitProgress.style.setProperty("--progress", `${progress * 360}deg`);
-      displayedPercent = progress;
-      if (progress >= 1) {
-        enableSubmitButton();
-        }
-      if (t < 1) {
-        requestAnimationFrame(frame);
-        } else {
-        displayedPercent = toPercent;
-        }
-     }
-    requestAnimationFrame(frame);
-    };
+  // Too little swings the needle left, too much swings it right.
+  const ratio= solCount === 0 ? 0 : (wallCount - solCount) / solCount;
+  const clamped= Math.max(-1, Math.min(1, ratio));
 
-  animateProgress(percent, 500);
+  scale.style.setProperty("--tilt", `${balanced ? 0 : clamped * maxTilt}deg`);
+  scale.classList.toggle("balanced", balanced);
+
+  if (balanced) { enableSubmitButton(); }
+  else { disableSubmitButton(); }
   };
 
 // Build the wall exactly as normaliseWallText does, but one character at a
