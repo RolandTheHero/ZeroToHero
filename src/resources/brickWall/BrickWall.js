@@ -264,15 +264,6 @@ const stopSparkles= () => {
     }
   };
 
-const enableSubmitButton= () => {
-  submitBtn.classList.remove("transparent");
-  submitBtn.disabled = false;
-  };
-const disableSubmitButton= () => {
-  submitBtn.classList.add("transparent");
-  submitBtn.disabled = true;
-  };
-
 // A side weighs as much as its non-whitespace character count after
 // normalisation. \s covers \u00A0, so unfilled slots weigh nothing.
 const weigh= str => str.replace(/[\s\u00A0]/g, "").length;
@@ -288,9 +279,6 @@ const updateVisuals= () => {
 
   scale.style.setProperty("--tilt", `${balanced ? 0 : clamped * maxTilt}deg`);
   scale.classList.toggle("balanced", balanced);
-
-  if (balanced) { enableSubmitButton(); }
-  else { disableSubmitButton(); }
   };
 
 // Build the wall exactly as normaliseWallText does, but one character at a
