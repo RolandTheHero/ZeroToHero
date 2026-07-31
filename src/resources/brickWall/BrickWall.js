@@ -202,14 +202,21 @@ const onComplete= () => {
   setTimeout(() => window.location.href = nextLevelUrl, 5000);
   };
 const onFail= () => {
-  const wrongBrick= findFirstWrongBrick();
+  let wrongBrick= findFirstWrongBrick();
   if (wrongBrick.classList.contains("movable")) {
     wrongBrick.classList.add("vibrate");
     vibratingBrick = wrongBrick;
     displayPanicMessage("Something doesn't seem right. That brick is shaking!");
     return;
     }
-  console.log("Should not vibrate immovable brick");
+  wrongBrick = findFirstWrongBrickReversed();
+  if (wrongBrick.classList.contains("movable")) {
+    wrongBrick.classList.add("vibrate");
+    vibratingBrick = wrongBrick;
+    displayPanicMessage("Something doesn't seem right. That brick is shaking!");
+    return;
+    }
+  displayPanicMessage("I'm so confused, something doesn't seem right.");
   };
 
 const checkSolution= () => {
@@ -297,6 +304,33 @@ const findFirstWrongBrick= () => {
       }
     raw += "\n";
     if (!sol.startsWith(Utils.normalize(raw))) { return null; } // Row ended early
+    }
+    return null;
+  };
+
+const findFirstWrongBrickReversed= () => {
+  const sol= Utils.normalize(solution);
+  let raw= "";
+  for (let r= brickRows.length - 1; r >= 0; r--) {
+    const row= brickRows[r];
+    // Add newline between rows (except after the last row)
+    if (raw.length > 0) {
+      raw = "\n" + raw;
+      if (!sol.endsWith(Utils.normalize(raw))) {
+        return null; // Row ended early
+        }
+      }
+    const children= row.children;
+    for (let c= children.length - 1; c >= 0; c--) {
+      const brick= children[c];
+      const text= brick.textContent;
+      for (let i= text.length - 1; i >= 0; i--) {
+        raw = text[i] + raw;
+        if (!sol.endsWith(Utils.normalize(raw))) {
+          return brick;
+          }
+        }
+      }
     }
     return null;
   };
