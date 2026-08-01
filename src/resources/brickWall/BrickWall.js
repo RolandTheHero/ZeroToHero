@@ -90,6 +90,16 @@ const registerMovable= e => {
 
 movableBricks.forEach(b => registerMovable(b));
 
+scale.addEventListener("mouseenter", () => {
+  const tilt= getComputedStyle(scale).getPropertyValue("--tilt");
+  if (tilt === "0deg") { displayPanicMessage("You've got the right amount of bricks. But are they correct?", "panicThumbs1.png"); }
+  else if (tilt.startsWith("-")) { displayPanicMessage("Keep going, we're not done yet.", "panic25.png"); }
+  else { displayPanicMessage("There's too many bricks on the wall! Take some away.", "panic01.png"); }
+  });
+scale.addEventListener("mouseleave", () => {
+  hintChar.hidden = true;
+  });
+
 document.addEventListener("pointermove", e => {
   if (ghostBrick === null) { return; }
 
@@ -206,17 +216,17 @@ const onFail= () => {
   if (wrongBrick.classList.contains("movable")) {
     wrongBrick.classList.add("vibrate");
     vibratingBrick = wrongBrick;
-    displayPanicMessage("Something doesn't seem right. That brick is shaking!");
+    displayPanicMessage("Something doesn't seem right. That brick is shaking!", "panic20.png");
     return;
     }
   wrongBrick = findFirstWrongBrickReversed();
   if (wrongBrick.classList.contains("movable")) {
     wrongBrick.classList.add("vibrate");
     vibratingBrick = wrongBrick;
-    displayPanicMessage("Something doesn't seem right. That brick is shaking!");
+    displayPanicMessage("Something doesn't seem right. That brick is shaking!", "panic20.png");
     return;
     }
-  displayPanicMessage("I'm so confused, something doesn't seem right.");
+  displayPanicMessage("I'm so confused, something doesn't seem right.", "panic27.png");
   };
 
 const checkSolution= () => {
@@ -336,7 +346,8 @@ const findFirstWrongBrickReversed= () => {
   };
 
 const hintChar= document.getElementById("hintCharacter");
-const displayPanicMessage= (msg) => {
+const displayPanicMessage= (msg, image) => {
+  hintChar.querySelector(".panicImg").src = "../../assets/panic/" + image;
   const speechBubble= hintChar.querySelector(".speechBubble");
   speechBubble.textContent = msg;
   hintChar.hidden = false;
