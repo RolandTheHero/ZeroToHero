@@ -213,6 +213,10 @@ const onComplete= () => {
   };
 const onFail= () => {
   let wrongBrick= findFirstWrongBrick();
+  if (wrongBrick === null) {
+    displayPanicMessage("Everything looks right so far, but there's still some bricks missing.", "panicThumbs1.png");
+    return;
+  }
   if (wrongBrick.classList.contains("movable")) {
     wrongBrick.classList.add("vibrate");
     vibratingBrick = wrongBrick;
@@ -220,7 +224,7 @@ const onFail= () => {
     return;
     }
   wrongBrick = findFirstWrongBrickReversed();
-  if (wrongBrick.classList.contains("movable")) {
+  if (wrongBrick !== null && wrongBrick.classList.contains("movable")) {
     wrongBrick.classList.add("vibrate");
     vibratingBrick = wrongBrick;
     displayPanicMessage("Something doesn't seem right. That brick is shaking!", "panic20.png");
@@ -301,7 +305,7 @@ const updateVisuals= () => {
 // Build the wall exactly as normaliseWallText does, but one character at a
 // time, normalising after each. The first character whose addition stops the
 // result being a prefix of the solution belongs to the wrong brick.
-const findFirstWrongBrick= () => {
+const _findFirstWrongBrick= (brickRows, solution) => {
   const sol= Utils.normalize(solution);
   let raw= "";
   for (const r of brickRows) {
@@ -309,7 +313,7 @@ const findFirstWrongBrick= () => {
       const text= c.textContent;
       for (let i= 0; i < text.length; i++) {
         raw += text[i];
-        if (!sol.startsWith(Utils.normalize(raw))) { return c; }
+        if (!sol.startsWith(Utils.normalize(raw))) { return c.original ? c.original : c; }
         }
       }
     raw += "\n";
@@ -317,32 +321,16 @@ const findFirstWrongBrick= () => {
     }
     return null;
   };
-
+const findFirstWrongBrick= () => {
+  return _findFirstWrongBrick(brickRows, solution);
+  };
 const findFirstWrongBrickReversed= () => {
-  const sol= Utils.normalize(solution);
-  let raw= "";
-  for (let r= brickRows.length - 1; r >= 0; r--) {
-    const row= brickRows[r];
-    // Add newline between rows (except after the last row)
-    if (raw.length > 0) {
-      raw = "\n" + raw;
-      if (!sol.endsWith(Utils.normalize(raw))) {
-        return null; // Row ended early
-        }
-      }
-    const children= row.children;
-    for (let c= children.length - 1; c >= 0; c--) {
-      const brick= children[c];
-      const text= brick.textContent;
-      for (let i= text.length - 1; i >= 0; i--) {
-        raw = text[i] + raw;
-        if (!sol.endsWith(Utils.normalize(raw))) {
-          return brick;
-          }
-        }
-      }
-    }
-    return null;
+  const reversedRows= [...brickRows].reverse().map(row => ({
+	children: [...row.children].reverse().map(child => ({
+	  original: child,
+	  textContent: child.textContent.split("").reverse().join("")
+	}))}));
+  return _findFirstWrongBrick(reversedRows, solution.split('').reverse().join(''));
   };
 
 const hintChar= document.getElementById("hintCharacter");
