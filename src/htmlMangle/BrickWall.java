@@ -2,6 +2,7 @@ package htmlMangle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import mainZeroToHero.Days;
 import resources.File;
@@ -21,8 +22,8 @@ public class BrickWall {
   private static final int wallLength= 80;
   private static final int pileLength= 53;
   
-  private final List<List<Brick>> pileRows= new ArrayList<>();
-  private final List<List<Brick>> wallRows= new ArrayList<>();
+  protected final List<List<Brick>> pileRows= new ArrayList<>();
+  protected final List<List<Brick>> wallRows= new ArrayList<>();
   private List<Brick> currentWallRowBricks= new ArrayList<>();
   private List<Brick> currentPileRowBricks= new ArrayList<>();
   
@@ -89,6 +90,26 @@ public class BrickWall {
     }
   private String renderAnswerWall() {
     return "<pre id=\"answerWall\" class=\"wall answer hidden\">" + Escape.escapeForHtmlText(solution) + "</pre>";
+    }
+  protected String rawWallString() {
+    StringBuilder sb = new StringBuilder();
+    for (List<Brick> sortedBricks : wallRows) {
+      int currentIndex = 0;
+      for (Brick brick : sortedBricks) {
+        int brickIndex= brick.index();
+        int len= brick.length();
+        for (; currentIndex < brickIndex; currentIndex++) {
+          sb.append(" ");
+          }
+        sb.append(brick.code());
+        currentIndex += len;
+        }
+      for (; currentIndex < wallLength; currentIndex++) {
+        sb.append(" ");
+        }
+      sb.append("\n");
+      }
+    return sb.toString();
     }
 
   private record Brick(String code, boolean movable, int index) {

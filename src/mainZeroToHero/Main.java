@@ -75,6 +75,7 @@ public class Main {
     d.add(new BookAbstraction2());    
     d.add(new StartDay6Fire());
     //d.add(new BrickWallTest());
+    d.add(new BrickWallDeconTest());
   }
   public static void leoLevels(){
     Days d= new Days("assetsLeo");
