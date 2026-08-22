@@ -1,9 +1,11 @@
 package htmlMangle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import mainZeroToHero.Days;
+import resources.File;
 
 public class BrickWallDeconstruction extends BrickWall {
   private List<String> checkpoints= new ArrayList<>();
@@ -46,6 +48,15 @@ public class BrickWallDeconstruction extends BrickWall {
     wallPermutations.add(permutations);
     return this;
     }
+  public String build() {
+    checkpoints.addAll(Arrays.asList(wallPermutations()));
+    String wallString= renderWall(wallRows, wallLength, true);
+    String pileString= renderWall(pileRows, pileLength, false);
+    return name.htmlNextLevel(File.BrickWallDeconstruction_html.text)
+      .replace("[###WALL###]", wallString)
+      .replace("[###PILE###]", pileString);
+    }
+  
   public String[] wallPermutations() {
     List<String> results= new ArrayList<>();
     results.add("");

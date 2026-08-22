@@ -19,15 +19,15 @@ import resources.File;
  *   where the player has to remove all the unnecessary bricks.
  */
 public class BrickWall {
-  private static final int wallLength= 80;
-  private static final int pileLength= 53;
+  protected static final int wallLength= 80;
+  protected static final int pileLength= 53;
   
   protected final List<List<Brick>> pileRows= new ArrayList<>();
   protected final List<List<Brick>> wallRows= new ArrayList<>();
   private List<Brick> currentWallRowBricks= new ArrayList<>();
   private List<Brick> currentPileRowBricks= new ArrayList<>();
   
-  private final Days.LevelName name;
+  protected final Days.LevelName name;
   private final String solution;
   private int currentIndexAlongWallRow= 0;
   private int currentIndexAlongPileRow= 0;
@@ -66,7 +66,7 @@ public class BrickWall {
       .replace("[###ANSWERWALL###]", renderAnswerWall());
     }
 
-  private String renderWall(List<List<Brick>> brickRows, int length, boolean isWall) {
+  protected String renderWall(List<List<Brick>> brickRows, int length, boolean isWall) {
     StringBuilder sb = new StringBuilder();
     for (List<Brick> sortedBricks : brickRows) {
       sb.append("<span class=\"brickRow\">");
@@ -90,26 +90,6 @@ public class BrickWall {
     }
   private String renderAnswerWall() {
     return "<pre id=\"answerWall\" class=\"wall answer hidden\">" + Escape.escapeForHtmlText(solution) + "</pre>";
-    }
-  protected String rawWallString() {
-    StringBuilder sb = new StringBuilder();
-    for (List<Brick> sortedBricks : wallRows) {
-      int currentIndex = 0;
-      for (Brick brick : sortedBricks) {
-        int brickIndex= brick.index();
-        int len= brick.length();
-        for (; currentIndex < brickIndex; currentIndex++) {
-          sb.append(" ");
-          }
-        sb.append(brick.code());
-        currentIndex += len;
-        }
-      for (; currentIndex < wallLength; currentIndex++) {
-        sb.append(" ");
-        }
-      sb.append("\n");
-      }
-    return sb.toString();
     }
 
   private record Brick(String code, boolean movable, int index) {
