@@ -55,6 +55,7 @@ public class BrickWall {
   public BrickWall addBrick(int indexSkip, boolean movable, String s) {
     currentIndexAlongWallRow += indexSkip;
     currentWallRowBricks.add(new Brick(s, movable, currentIndexAlongWallRow));
+    currentIndexAlongWallRow += s.length();
     return this;
     }
   public BrickWall addImmovable(int indexSkip, String s) { return addBrick(indexSkip, false, s); }
