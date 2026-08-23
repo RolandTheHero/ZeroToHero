@@ -3,6 +3,7 @@ package htmlMangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import mainZeroToHero.Days;
 import resources.File;
@@ -52,12 +53,15 @@ public class BrickWallDeconstruction extends BrickWall {
     checkpoints.addAll(Arrays.asList(wallPermutations()));
     String wallString= renderWall(wallRows, wallLength, true);
     String pileString= renderWall(pileRows, pileLength, false);
+    String checkpointsString= Arrays.stream(wallPermutations())
+      .collect(Collectors.joining("\", \"", "\"", "\""));
     return name.htmlNextLevel(File.BrickWallDeconstruction_html.text)
       .replace("[###WALL###]", wallString)
-      .replace("[###PILE###]", pileString);
+      .replace("[###PILE###]", pileString)
+      .replace("[###CHECKPOINTS###]", checkpointsString);
     }
   
-  public String[] wallPermutations() {
+  private String[] wallPermutations() {
     List<String> results= new ArrayList<>();
     results.add("");
     for (String[] options : wallPermutations) {

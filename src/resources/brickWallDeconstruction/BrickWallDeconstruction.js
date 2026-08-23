@@ -1,13 +1,20 @@
-const wall= Utils.getElementById("wall");
-const brickRows= wall.querySelectorAll(".brickRow");
-const movableBricks= document.querySelectorAll(".brick.movable");
+let wall= Utils.getElementById("wall");
+let brickRows= wall.querySelectorAll(".brickRow");
+let movableBricks= document.querySelectorAll(".brick.movable");
 const movingBricksDiv= Utils.getElementById("movingBricks");
-const pile= Utils.getElementById("pile");
+let pile= Utils.getElementById("pile");
 const gameArea= Utils.getElementById("gameArea");
-
-const solution= MetaData.str(wall, "solution");
+let bottom= Utils.getElementById("bottom");
 
 const space= "\u00A0";
+
+// Normalise the checkpoints
+for (let i= 0; i < checkpoints.length; i++) {
+  checkpoints[i] = Utils.normalize(checkpoints[i]);
+  }
+// The shortest checkpoints are solutions
+const solutionLength= Math.min(...checkpoints.map(s => s.length));
+const solutions= checkpoints.filter(s => s.length === solutionLength);
 
 const glideTime= 500; // How long the snap-back glide takes
 
@@ -16,6 +23,8 @@ let gliding= false; // True while a rejected brick is animating home
 let currentEmpty= null; // The current empty span the mouse is on while dragging
 let lastSpot= null; // The space where the newly dragged brick just left
 let vibratingBrick= null;
+
+let currentCheckpointStack= [];
 
 const isEmpty= e => e && e.classList && e.classList.contains("empty");
 
@@ -69,6 +78,7 @@ const getBrickPosFromMouse= (brick, event) => {
 const registerMovable= e => {
   const handler= event => {
     if (gliding) { return; }
+	//checkCheckpoint(); // MOVE THIS
     dragging = true;
     ghostBrick = createGhost(e);
     const pos= getBrickPosFromMouse(e, event);
@@ -200,14 +210,32 @@ const onFail= () => {
   
   };
 
+const checkCheckpoint= () => {
+  const wallText= normaliseWallText();
+  const wallCopy= bottom.cloneNode(true);
+  currentCheckpointStack.push(wallCopy);
+  };
+
 const checkSolution= () => {
   const wallText= normaliseWallText();
   if (wallText === Utils.normalize(solution)) { onComplete(); }
   else { onFail(); }
   };
 
+const checkpointReturn= () => {
+  if (currentCheckpointStack.length === 0) { return; }
+  const wallCopy= currentCheckpointStack.pop();
+  bottom.replaceWith(wallCopy);
+  bottom = wallCopy;
+  wall = Utils.getElementById("wall");
+  brickRows = wall.querySelectorAll(".brickRow");
+  movableBricks = document.querySelectorAll(".brick.movable");
+  pile = Utils.getElementById("pile");
+  movableBricks.forEach(b => registerMovable(b));
+  };
+
 const buttonActions= {
-  submitBtn: checkSolution,
+  checkpointReturnBtn: checkpointReturn,
   hintBtn: () => {},
   };
 const Buttons= initButtons(() => {}, buttonActions);
@@ -255,3 +283,5 @@ const displayPanicMessage= (msg, image) => {
   speechBubble.textContent = msg;
   hintChar.hidden = false;
   };
+
+console.log(checkpoints);

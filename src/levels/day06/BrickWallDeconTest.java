@@ -10,17 +10,16 @@ public class BrickWallDeconTest implements Function<Days.LevelName, String>{
     BrickWallDeconstruction bw= new BrickWallDeconstruction(name)
       .addMovable(0, "Direction")
       .addReplaceable(0, "[]", "", "{}")
-      .addImmovable(9, ": ")
+      .addImmovable(1, ": ")
       .newRow()
       .addReplaceable(0, ";", ":skull:", "Hello", "bye")
       .addMovable(1, "   ")
       .newRow()
-      .addImmovable(1, "          ")
+      .addImmovable(2, "          ")
       .addToPile(0, true, "}")
       .addToPile(0, true, "{")
       .addToPile(0, true, ".turn: ")
       .addToPile(0, true, "Direction");
-    for (String s : bw.wallPermutations()) {System.out.println(s);}
     return bw.build();
     }
   }
