@@ -7,19 +7,36 @@ import mainZeroToHero.Days;
 
 public class BrickWallDeconTest implements Function<Days.LevelName, String>{
   public String apply(Days.LevelName name) {
+    //Wood[]:Material{ imm .mass(length: Nat): imm Nat -> length+length+length; }
     BrickWallDeconstruction bw= new BrickWallDeconstruction(name)
-      .addMovable(0, "Direction")
-      .addReplaceable(0, "[]", "", "{}")
-      .addImmovable(1, ": ")
+      .addMovable(0, "Wood")
+      .addReplaceable(0, "[]", "")
+      .addMovable(0, ":")
+      .addMovable(0, "Material")
+      .addMovable(0, "{ ")
       .newRow()
-      .addReplaceable(0, ";", ":skull:", "Hello", "bye")
-      .addMovable(1, "   ")
+      .addReplaceable(0, "imm", "")
+      .addMovable(0, ".mass")
+      .addMovable(0, "(")
+      .addMovable(0, "length")
+      .addReplaceable(0, ": Nat", "")
+      .addMovable(0, ")")
+      .addMovable(0, ":")
+      .addReplaceable(0, " imm ", "")
+      .addReplaceable(0, "Nat", "")
+      .addMovable(1, "->")
+//      .addReplaceable(1, "length", "3*length", "length*3")
+//      .addReplaceable(0, "+", "")
+//      .addReplaceable(0, "length", "")
+//      .addReplaceable(0, "+", "")
+//      .addReplaceable(0, "length", "")
+      .addReplaceable(1, "length+length+length", "3*length", "length*3")
+      .addMovable(0, ";")
       .newRow()
-      .addImmovable(2, "          ")
-      .addToPile(0, true, "}")
-      .addToPile(0, true, "{")
-      .addToPile(0, true, ".turn: ")
-      .addToPile(0, true, "Direction");
+      .addMovable(0, "}")
+      .addToPile(0, true, "3")
+      .addToPile(0, true, "*")
+      .addToPile(5, true, "length");
     return bw.build();
     }
   }

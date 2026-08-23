@@ -78,7 +78,6 @@ const getBrickPosFromMouse= (brick, event) => {
 const registerMovable= e => {
   const handler= event => {
     if (gliding) { return; }
-	//checkCheckpoint(); // MOVE THIS
     dragging = true;
     ghostBrick = createGhost(e);
     const pos= getBrickPosFromMouse(e, event);
@@ -129,7 +128,8 @@ const commitBrick= (slot, text) => {
   parent.insertBefore(placed, ref);
   slot.forEach(s => s.remove());
   registerMovable(placed);
-  }
+  checkCheckpoint();
+  };
 
 // Ease the ghost from wherever it was dropped back onto its slot.
 const glideTo= (ghost, slot, done) => {
@@ -212,19 +212,40 @@ const onFail= () => {
 
 const checkCheckpoint= () => {
   const wallText= normaliseWallText();
-  const wallCopy= bottom.cloneNode(true);
-  currentCheckpointStack.push(wallCopy);
+  if (solutions.includes(wallText)) {
+	onComplete();
+	return;
+    }
+  let foundCheckpoint= null;
+  for (const checkpoint of checkpoints) {
+    if (wallText === checkpoint) {
+      foundCheckpoint = checkpoint;
+	  console.log(checkpoint);
+      break;
+      }
+    }
+  if (foundCheckpoint === null) { return; }
+  const lastCheckpoint= currentCheckpointStack.at(-1);
+  if (lastCheckpoint === undefined || foundCheckpoint.length < lastCheckpoint.raw.length) {
+	console.log("New Checkpoint: " + wallText);
+    const wallCopy= bottom.cloneNode(true);
+    currentCheckpointStack.push({
+      element: wallCopy,
+      raw: foundCheckpoint
+	  });
+    }
   };
 
-const checkSolution= () => {
+/*const checkSolution= () => {
   const wallText= normaliseWallText();
   if (wallText === Utils.normalize(solution)) { onComplete(); }
   else { onFail(); }
-  };
+  };*/
 
 const checkpointReturn= () => {
+  console.log(currentCheckpointStack)
   if (currentCheckpointStack.length === 0) { return; }
-  const wallCopy= currentCheckpointStack.pop();
+  const wallCopy= currentCheckpointStack.at(-1).element.cloneNode(true);
   bottom.replaceWith(wallCopy);
   bottom = wallCopy;
   wall = Utils.getElementById("wall");
