@@ -10,7 +10,7 @@ import resources.File;
 
 public class BrickWallDeconstruction extends BrickWall {
   private List<String> checkpoints= new ArrayList<>();
-  private List<String[]> wallPermutations = new ArrayList<>();
+  private List<String[]> wallPermutations= new ArrayList<>();
   
   public BrickWallDeconstruction(Days.LevelName name) {
     super(name, "");
@@ -47,6 +47,19 @@ public class BrickWallDeconstruction extends BrickWall {
     permutations[0] = from;
     System.arraycopy(to, 0, permutations, 1, to.length);
     wallPermutations.add(permutations);
+    return this;
+    }
+  public BrickWallDeconstruction makeReplaceable(int lastBricks, String... to) {
+    String[] newPermutation = new String[to.length + 1];
+    newPermutation[0] = "";
+    List<String[]> subPermutations = wallPermutations.subList(wallPermutations.size() - lastBricks, wallPermutations.size());
+    for (String[] subPermutation : subPermutations) {
+      newPermutation[0] += subPermutation[0];
+      }
+    subPermutations.clear();
+    System.arraycopy(to, 0, newPermutation, 1, to.length);
+    subPermutations.add(newPermutation);
+    for (String s : newPermutation) { System.out.println(s); }
     return this;
     }
   public String build() {
