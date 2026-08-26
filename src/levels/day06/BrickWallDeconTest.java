@@ -15,7 +15,7 @@ public class BrickWallDeconTest implements Function<Days.LevelName, String>{
       .addMovable(0, "Material")
       .addMovable(0, "{ ")
       .newRow()
-      .addReplaceable(0, "imm", "")
+      .addReplaceable(2, "imm", "")
       .addMovable(0, ".mass")
       .addMovable(0, "(")
       .addMovable(0, "length")

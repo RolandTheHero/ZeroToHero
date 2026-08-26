@@ -220,7 +220,6 @@ const checkCheckpoint= () => {
   for (const checkpoint of checkpoints) {
     if (wallText === checkpoint) {
       foundCheckpoint = checkpoint;
-	  console.log(checkpoint);
       break;
       }
     }
@@ -233,7 +232,18 @@ const checkCheckpoint= () => {
       element: wallCopy,
       raw: foundCheckpoint
 	  });
+    Utils.flashImage("rgba(0, 0, 0, 0)","levelEndCharacter","translateY(-5%)")
+	wallCorrectGlow();
     }
+  };
+
+let glowTimeout = null;
+const wallCorrectGlow= () => {
+  wall.classList.add("correctGlow");
+  clearTimeout(glowTimeout);
+  glowTimeout = setTimeout(() => {
+    wall.classList.remove("correctGlow");
+    }, 1000);
   };
 
 /*const checkSolution= () => {
