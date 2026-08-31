@@ -8,6 +8,8 @@ let bottom= Utils.getElementById("bottom");
 
 const space= "\u00A0";
 
+let checkpoints = globalThis.checkpoints
+
 // Normalise the checkpoints
 for (let i= 0; i < checkpoints.length; i++) {
   checkpoints[i] = Utils.normalize(checkpoints[i]);
