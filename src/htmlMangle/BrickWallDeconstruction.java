@@ -59,7 +59,6 @@ public class BrickWallDeconstruction extends BrickWall {
     subPermutations.clear();
     System.arraycopy(to, 0, newPermutation, 1, to.length);
     subPermutations.add(newPermutation);
-    for (String s : newPermutation) { System.out.println(s); }
     return this;
     }
   public String build() {
@@ -67,6 +66,7 @@ public class BrickWallDeconstruction extends BrickWall {
     String wallString= renderWall(wallRows, wallLength, true);
     String pileString= renderWall(pileRows, pileLength, false);
     String checkpointsString= Arrays.stream(wallPermutations())
+      .map(Escape::escapeForHtmlScripts)
       .collect(Collectors.joining("\", \"", "<script>globalThis.checkpoints = [\"", "\"];</script>"));
     return name.htmlNextLevel(File.BrickWallDeconstruction_html.text)
       .replace("[###WALL###]", wallString)
