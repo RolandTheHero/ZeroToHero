@@ -1,4 +1,4 @@
-let checkpoints = globalThis.checkpoints;
+let checkpoints= globalThis.checkpoints;
 
 for (let i= 0; i < checkpoints.length; i++) {
   checkpoints[i] = Utils.normalize(checkpoints[i]);
@@ -8,7 +8,8 @@ const solutionLength= Math.min(...checkpoints.map(s => s.length));
 const solutions= checkpoints.filter(s => s.length === solutionLength);
 
 let currentCheckpointStack= [];
-let glowTimeout = null;
+let glowTimeout= null;
+const score= BrickWallDeconstructionScore();
 
 const hintChar= document.getElementById("hintCharacter");
 const displayPanicMessage= (msg, image) => {
@@ -35,6 +36,8 @@ let brickWall= initBrickWall({
     },
   });
 
+const initialWallText= brickWall.normaliseWallText();
+
 const wallCorrectGlow= () => {
   wall.classList.add("correctGlow");
   clearTimeout(glowTimeout);
@@ -45,10 +48,6 @@ const wallCorrectGlow= () => {
 
 const checkCheckpoint= () => {
   const wallText= brickWall.normaliseWallText();
-  if (solutions.includes(wallText)) {
-    onComplete();
-    return;
-    }
   let foundCheckpoint= null;
   for (const checkpoint of checkpoints) {
     if (wallText === checkpoint) {
@@ -60,11 +59,17 @@ const checkCheckpoint= () => {
   const lastCheckpoint= currentCheckpointStack.at(-1);
   if (lastCheckpoint === undefined || foundCheckpoint.length < lastCheckpoint.raw.length) {
     console.log("New Checkpoint: " + wallText);
+    const oldLength= lastCheckpoint === undefined ? initialWallText.length : lastCheckpoint.raw.length;
+    score.doSuccess(oldLength - foundCheckpoint.length);
     const wallCopy= bottom.cloneNode(true);
     currentCheckpointStack.push({
       element: wallCopy,
       raw: foundCheckpoint
       });
+    if (solutions.includes(wallText)) {
+      onComplete();
+      return;
+      }
     Utils.flashImage("rgba(0, 0, 0, 0)","levelEndCharacter","translateY(-5%)");
     wallCorrectGlow();
     }
