@@ -36,14 +36,20 @@ let brickWall= initBrickWall({
     },
   });
 
-const initialWallText= brickWall.normaliseWallText();
-
 const wallCorrectGlow= () => {
   wall.classList.add("correctGlow");
   clearTimeout(glowTimeout);
   glowTimeout = setTimeout(() => {
     wall.classList.remove("correctGlow");
     }, 3000);
+  };
+
+const makeCheckpoint = () => {
+  const wallCopy= bottom.cloneNode(true);
+  currentCheckpointStack.push({
+    element: wallCopy,
+    raw: brickWall.normaliseWallText()
+    });
   };
 
 const checkCheckpoint= () => {
@@ -61,11 +67,7 @@ const checkCheckpoint= () => {
     console.log("New Checkpoint: " + wallText);
     const oldLength= lastCheckpoint === undefined ? initialWallText.length : lastCheckpoint.raw.length;
     score.doSuccess(oldLength - foundCheckpoint.length);
-    const wallCopy= bottom.cloneNode(true);
-    currentCheckpointStack.push({
-      element: wallCopy,
-      raw: foundCheckpoint
-      });
+    makeCheckpoint();
     if (solutions.includes(wallText)) {
       onComplete();
       return;
@@ -112,3 +114,4 @@ const buttonActions= {
 const Buttons= initButtons(() => {}, buttonActions);
 
 console.log(checkpoints);
+makeCheckpoint();
