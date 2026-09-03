@@ -1,5 +1,6 @@
 // Shared initialization
 let wall= Utils.getElementById("wall");
+let pile= Utils.getElementById("pile");
 const gameArea= Utils.getElementById("gameArea");
 const movingBricksDiv= Utils.getElementById("movingBricks");
 const glideTime= 500;
@@ -9,6 +10,7 @@ const glideTime= 500;
 const initBrickWall= (config) => {
   const {
     wall,
+    pile,
     gameArea,
     movingBricksDiv,
     glideTime = 500,
@@ -23,6 +25,7 @@ const initBrickWall= (config) => {
   let currentEmpty= null;
   let lastSpot= null;
   let ghostBrick= null;
+  let fallingCount= 0;
   const movableBrickEventListeners= new Map();
 
   const isEmpty= e => e && e.classList && e.classList.contains("empty");
@@ -35,6 +38,17 @@ const initBrickWall= (config) => {
       cur = cur.nextElementSibling;
       }
     return slot.length === length ? slot : null;
+    };
+
+  // Find the span that starts exactly at column x in a row (null if a brick straddles it)
+  const spanAtX= (row, x) => {
+    let pos= 0;
+    for (const c of row.children) {
+      if (pos === x) { return c; }
+      if (pos > x) { return null; }
+      pos += c.textContent.length;
+      }
+    return null;
     };
 
   const getBrickPosFromMouse= (brick, event) => {
@@ -52,7 +66,8 @@ const initBrickWall= (config) => {
     return ghost;
     };
 
-  const setEmpty= e => {
+  // Replace a brick with empties, with no side effects on lastSpot / ghostBrick
+  const replaceWithEmpties= e => {
     const len= e.textContent.length;
     const parent= e.parentElement;
     e.removeEventListener("pointerdown", movableBrickEventListeners.get(e));
@@ -65,8 +80,13 @@ const initBrickWall= (config) => {
       parent.insertBefore(empty, e);
       if (i === 0) { firstEmpty = empty; }
       }
-    lastSpot = findSlot(firstEmpty, ghostBrick.textContent.length);
     e.remove();
+    return firstEmpty;
+    };
+
+  const setEmpty= e => {
+    const firstEmpty= replaceWithEmpties(e);
+    lastSpot = findSlot(firstEmpty, ghostBrick.textContent.length);
     };
 
   const registerMovable= e => {
@@ -121,6 +141,7 @@ const initBrickWall= (config) => {
     slot.forEach(s => s.remove());
     registerMovable(placed);
     onBrickCommitted?.();
+    return placed;
     };
 
   let sparkleInterval= null;
@@ -178,6 +199,56 @@ const initBrickWall= (config) => {
     return str;
     };
 
+  // Move a brick to a slot: the DOM is updated immediately (so later gravity
+  // checks see the new layout) while a ghost glides down to the new position
+  const dropBrick= (brick, slot) => {
+    const text= brick.textContent;
+    const rect= brick.getBoundingClientRect();
+    const gameAreaRect= gameArea.getBoundingClientRect();
+
+    const ghost= createGhost(brick);
+    ghost.classList.remove("ghost");
+    ghost.style.left = `${rect.left - gameAreaRect.left}px`;
+    ghost.style.top = `${rect.top - gameAreaRect.top}px`;
+
+    replaceWithEmpties(brick);
+    const placed= commitBrick(slot, text);
+    placed.style.visibility = "hidden";
+
+    fallingCount++;
+    gliding = true;
+    // glideTo only reads slot[0]'s rect, so the placed brick works as the target
+    glideTo(ghost, [placed], () => {
+      placed.style.visibility = "";
+      ghost.remove();
+      fallingCount--;
+      if (fallingCount === 0) { gliding = false; }
+      });
+    };
+
+  const runGravity= () => {
+    // Bottom-up: by the time we reach a row, everything below it has already settled
+    // (bottom row does not need to be checked)
+    const brickRows= [...pile.querySelectorAll(".brickRow")];
+    for (let i= brickRows.length - 2; i >= 0; i--) {
+      const bricks= [...brickRows[i].children]; // snapshot, dropBrick mutates the row
+      let x= 0;
+      for (const brick of bricks) {
+        const len= brick.textContent.length;
+        if (brick.classList.contains("movable")) {
+          let lowest= null;
+          for (let ii= i + 1; ii < brickRows.length; ii++) {
+            const found= findSlot(spanAtX(brickRows[ii], x), len);
+            if (found === null) { break; } // blocked, can't fall past this row
+            lowest = found;
+            }
+          if (lowest !== null) { dropBrick(brick, lowest); }
+          }
+        x += len;
+        }
+      }
+    };
+
   // Set up event listeners
   const brickRows= wall.querySelectorAll(".brickRow");
   const movableBricks= document.querySelectorAll(".brick.movable");
@@ -225,6 +296,7 @@ const initBrickWall= (config) => {
       dragging = false;
       gliding = false;
       stopSparkles();
+      runGravity();
       };
 
     if (snapBack) {
@@ -243,6 +315,7 @@ const initBrickWall= (config) => {
     registerMovable,
     normaliseWallText,
     getWallText,
+    runGravity,
     brickRows,
     };
   };

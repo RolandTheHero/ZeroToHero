@@ -23,6 +23,7 @@ let vibratingBrick= null;
 
 let brickWall= initBrickWall({
   wall,
+  pile,
   gameArea,
   movingBricksDiv,
   glideTime: 500,
@@ -85,14 +86,15 @@ const onComplete= () => {
   };
 
 const checkpointReturn= () => {
-  console.log(currentCheckpointStack);
   if (currentCheckpointStack.length === 0) { return; }
   const wallCopy= currentCheckpointStack.at(-1).element.cloneNode(true);
   bottom.replaceWith(wallCopy);
   bottom = wallCopy;
   wall = Utils.getElementById("wall");
+  pile = Utils.getElementById("pile");
   brickWall = initBrickWall({
     wall,
+	pile,
     gameArea,
     movingBricksDiv,
     glideTime: 500,

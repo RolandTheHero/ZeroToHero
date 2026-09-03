@@ -16,6 +16,7 @@ const displayPanicMessage= (msg, image) => {
 
 const brickWall= initBrickWall({
   wall,
+  pile,
   gameArea,
   movingBricksDiv,
   glideTime: 500,
