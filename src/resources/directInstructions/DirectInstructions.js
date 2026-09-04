@@ -5,12 +5,12 @@ const initSlides= () => {
   const next = document.getElementById('nextBtn');
   const nextLevelUrl = MetaData.str(document.body,'next');
   const maxIndex = (() => {
-  let i = 0; 
+    let i = 0;
     while (true) {
       const ci = document.getElementById('content' + i++);
-    if (ci === null){return i - 2;}
+      if (ci === null){return i - 2;}
       }
-  })();
+    })();
   const allTextArea = i =>
     Array.from(
       document.getElementById('content' + i)
