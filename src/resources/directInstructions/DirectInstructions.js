@@ -143,6 +143,7 @@ const initSlides= () => {
   //slides after the first one wait in inert <template>s, so that their images
   //start loading only once the slide before them is fully loaded
   const overlay= Utils.getElementById('screenOverlay');
+  const loadingCircle= Utils.getElementById('loadingCircle');
   const created= [];
   const loaded= [];
   let pageLoaded= false;
@@ -150,6 +151,7 @@ const initSlides= () => {
   const setOverlay= (show)=>{
     if (overlayShown === show){ return; }
     overlayShown = show;
+    loadingCircle.hidden = !show;
     overlay.style.transition = show ? 'none' : 'opacity 0.5s ease-out';
     overlay.style.opacity = show ? '1' : '0';
     };
@@ -215,6 +217,7 @@ const initSlides= () => {
   window.addEventListener("load", () => {//BaseJs is fading the black screen out
     pageLoaded = true;
     overlayShown = false;
+    loadingCircle.hidden = true;
     loadNextSlide();
     refreshOverlay();
     });
